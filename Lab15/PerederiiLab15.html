@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <button onclick="task1()">Вивести натуральні числа</button>
+    <button onclick="task2()">Вивести парні числа</button>
+    <button onclick="task3()">Поділити число</button>
+    <button onclick="task4()">Конвертація в дюйми</button>
+    <button onclick="task5()">День тижня</button>
+    <p id="output"></p>
+
+    <script>
+        function task1() {
+            let i = -100;
+            let result = "";
+            while (i <= 100) {
+                result += i + " ";
+                i++;
+            }
+            document.getElementById("output").innerText = result;
+        }
+
+        function task2() {
+            let j = 0;
+            let result = "";
+            do {
+                if (j % 2 === 0) result += j + " ";
+                j++;
+            } while (j <= 100);
+            document.getElementById("output").innerText = result;
+        }
+
+        function task3() {
+            let b = 1000;
+            let count = 0;
+            while (b >= 5) {
+                b /= 3;
+                count++;
+            }
+            document.getElementById("output").innerHTML = "Результат: " + b + "<br>Кількість ітерацій: " + count;
+        }
+
+        function task4() {
+            let lengthCm = prompt("Введіть довжину в сантиметрах:");
+            let lengthInches = lengthCm / 2.54;
+            alert("Довжина в дюймах: " + lengthInches);
+        }
+
+        function task5() {
+            let day = parseInt(prompt("Введіть число від 1 до 31:"));
+            let date = new Date(new Date().getFullYear(), new Date().getMonth(), day);
+            let daysOfWeek = ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"];
+            document.getElementById("output").innerText = "День тижня: " + daysOfWeek[date.getDay()];
+        }
+    </script>
+</body>
+</html>

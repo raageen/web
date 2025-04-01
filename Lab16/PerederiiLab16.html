@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Завдання</title>
+</head>
+<body>
+    <button onclick="task1()">Завдання 1</button>
+    <div id="task1"></div>
+    
+    <button onclick="task2()">Завдання 2</button>
+    <div id="task2"></div>
+    
+    <button onclick="task3()">Завдання 3</button>
+    <div id="task3"></div>
+    
+    <button onclick="task4()">Завдання 4</button>
+    <div id="task4"></div>
+    
+    <button onclick="task5()">Завдання 5</button>
+    <div id="task5"></div>
+    
+    <button onclick="task6()">Завдання 6</button>
+    <div id="task6"></div>
+    
+    <script>
+        function task1() {
+            let container = document.getElementById('task1');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                let div = document.createElement('div');
+                div.style.width = '300px';
+                div.style.height = '300px';
+                div.style.backgroundColor = 'white';
+                div.style.border = '2px solid black';
+                div.style.display = 'inline-block';
+                div.style.margin = '5px';
+                div.onclick = function() { console.log(`Ширина: ${div.style.width}, Висота: ${div.style.height}`); };
+                container.appendChild(div);
+            }
+        }
+        
+        function task2() {
+            let container = document.getElementById('task2');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                let link = document.createElement('a');
+                link.href = `https://example.com/${i+1}`;
+                link.textContent = `Посилання ${i+1}`;
+                link.style.display = 'block';
+                
+                function addTitle() { link.title = link.href; }
+                function removeTitle() { link.removeAttribute('title'); }
+                
+                link.addEventListener('mouseenter', addTitle);
+                link.addEventListener('mouseleave', removeTitle);
+                container.appendChild(link);
+            }
+        }
+        
+        function task3() {
+            let container = document.getElementById('task3');
+            container.innerHTML = '<p id="demo"></p>';
+            for (let i = 0; i < 3; i++) {
+                let input = document.createElement('input');
+                input.type = 'text';
+                input.addEventListener('click', function() {
+                    document.getElementById('demo').textContent = this.value;
+                });
+                container.appendChild(input);
+            }
+        }
+        
+        function task4() {
+            let container = document.getElementById('task4');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                let input = document.createElement('input');
+                input.type = 'text';
+                let clicked = false;
+                input.addEventListener('click', function() {
+                    if (!clicked) {
+                        console.log(this.value);
+                        clicked = true;
+                    } else {
+                        alert(this.value);
+                    }
+                });
+                container.appendChild(input);
+            }
+        }
+        
+        function task5() {
+            let numbers = ['один', 'два', 'три'];
+            let container = document.getElementById('task5');
+            container.innerHTML = '';
+            numbers.forEach(num => {
+                let p = document.createElement('p');
+                p.textContent = num;
+                p.onclick = () => {
+                    let map = { 'один': 1, 'два': 2, 'три': 3 };
+                    p.textContent = map[num] ** 2;
+                };
+                container.appendChild(p);
+            });
+        }
+        
+        function task6() {
+            let container = document.getElementById('task6');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                let div = document.createElement('div');
+                div.style.width = '100px';
+                div.style.height = '100px';
+                div.style.border = '1px solid black';
+                div.style.background = 'green';
+                
+                function toggleRed() {
+                    div.style.background = 'red';
+                    div.removeEventListener('click', toggleRed);
+                    div.addEventListener('click', toggleGreen);
+                }
+                
+                function toggleGreen() {
+                    div.style.background = 'green';
+                    div.removeEventListener('click', toggleGreen);
+                    div.addEventListener('click', toggleRed);
+                }
+                
+                div.addEventListener('click', toggleRed);
+                container.appendChild(div);
+            }
+        }
+    </script>
+</body>
+</html>
