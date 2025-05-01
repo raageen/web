@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Завдання 1 і 2</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px 0; }
+    .section { margin-bottom: 30px; }
+  </style>
+</head>
+<body>
+
+  <h1>Завдання 1: Вибір мови і дня тижня</h1>
+  <button onclick="task1()">Запустити Завдання 1</button>
+  <div id="result1"></div>
+
+  <hr>
+
+  <h1>Завдання 2: Електромережа</h1>
+
+  <div class="section">
+    <h3>Електростанції (введіть потужність МВт через кому)</h3>
+    <input type="text" id="plants" placeholder="Наприклад: 50,80">
+  </div>
+
+  <div class="section">
+    <h3>Сонячні панелі (введіть потужність кожної вдень через кому)</h3>
+    <input type="text" id="panels" placeholder="Наприклад: 3,5,2">
+  </div>
+
+  <div class="section">
+    <h3>Житлові будинки (введіть кількість квартир через кому)</h3>
+    <input type="text" id="buildings" placeholder="Наприклад: 100,250,400">
+  </div>
+
+  <div class="section">
+    <h3>Лінії електропередач (місткість і ціна за МВт через кому, формат: місткість-ціна)</h3>
+    <input type="text" id="lines" placeholder="Наприклад: 50-900,70-1000">
+  </div>
+
+  <button onclick="calculate()">Розрахувати</button>
+
+  <h2>Результат:</h2>
+  <div id="result2"></div>
+
+  <script>
+    // Завдання 1
+    function task1() {
+      const data = {
+        ua: ["Понеділок", "Вівторок", "Середа", "Четвер", "Пʼятниця", "Субота", "Неділя"],
+        en: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      };
+
+      let lang;
+      while (true) {
+        lang = prompt("Виберіть мову: 'ua' або 'en'").toLowerCase();
+        if (lang === "ua" || lang === "en") break;
+        alert("Невірний ввід! Введіть 'ua' або 'en'.");
+      }
+
+      let day;
+      while (true) {
+        day = parseInt(prompt(lang === "ua"
+          ? "Введіть номер дня тижня (від 1 до 7)"
+          : "Enter the day number of the week (from 1 to 7)"), 10);
+        if (day >= 1 && day <= 7) break;
+        alert(lang === "ua" ? "Невірний номер дня!" : "Invalid day number!");
+      }
+
+      document.getElementById("result1").innerHTML = `<p>➡️ ${data[lang][day - 1]}</p>`;
+    }
+
+    // Завдання 2
+    class PowerPlant {
+      constructor(power) { this.power = power; }
+      getProduction(daytime) { return this.power; }
+    }
+
+    class SolarPanel {
+      constructor(power) { this.power = power; }
+      getProduction(daytime) { return daytime ? this.power : 0; }
+    }
+
+    class ResidentialBuilding {
+      constructor(apartments) { this.apartments = apartments; }
+      getConsumption(daytime) { return (daytime ? 4 : 1) * this.apartments / 1000; }
+    }
+
+    class PowerLine {
+      constructor(capacity, pricePerMW) {
+        this.capacity = capacity;
+        this.pricePerMW = pricePerMW;
+      }
+    }
+
+    function calculateBalance(networkElements, daytime) {
+      let totalProduction = 0;
+      let totalConsumption = 0;
+      let powerLines = [];
+
+      for (let elem of networkElements) {
+        if (elem instanceof PowerPlant || elem instanceof SolarPanel) {
+          totalProduction += elem.getProduction(daytime);
+        } else if (elem instanceof ResidentialBuilding) {
+          totalConsumption += elem.getConsumption(daytime);
+        } else if (elem instanceof PowerLine) {
+          powerLines.push(elem);
+        }
+      }
+
+      let balance = totalProduction - totalConsumption;
+      let totalCost = 0;
+
+      if (balance < 0) {
+        let need = -balance;
+        powerLines.sort((a, b) => a.pricePerMW - b.pricePerMW);
+        for (let line of powerLines) {
+          let toBuy = Math.min(need, line.capacity);
+          totalCost += toBuy * line.pricePerMW;
+          need -= toBuy;
+          if (need <= 0) break;
+        }
+      } else if (balance > 0) {
+        let surplus = balance;
+        powerLines.sort((a, b) => b.pricePerMW - a.pricePerMW);
+        for (let line of powerLines) {
+          let toSell = Math.min(surplus, line.capacity);
+          totalCost += toSell * line.pricePerMW;
+          surplus -= toSell;
+          if (surplus <= 0) break;
+        }
+      }
+
+      return { balance, money: totalCost };
+    }
+
+    function calculate() {
+      let plants = document.getElementById('plants').value.split(',').map(Number).filter(n => !isNaN(n));
+      let panels = document.getElementById('panels').value.split(',').map(Number).filter(n => !isNaN(n));
+      let buildings = document.getElementById('buildings').value.split(',').map(Number).filter(n => !isNaN(n));
+      let linesInput = document.getElementById('lines').value.split(',').map(s => s.split('-').map(Number));
+      let lines = linesInput.filter(a => a.length === 2 && !isNaN(a[0]) && !isNaN(a[1]));
+
+      let networkElements = [];
+
+      plants.forEach(p => networkElements.push(new PowerPlant(p)));
+      panels.forEach(p => networkElements.push(new SolarPanel(p)));
+      buildings.forEach(b => networkElements.push(new ResidentialBuilding(b)));
+      lines.forEach(l => networkElements.push(new PowerLine(l[0], l[1])));
+
+      let dayResult = calculateBalance(networkElements, true);
+      let nightResult = calculateBalance(networkElements, false);
+
+      document.getElementById('result2').innerHTML = `
+        <b>День:</b><br>
+        Баланс: ${dayResult.balance.toFixed(2)} МВт<br>
+        ${dayResult.balance >= 0 ? 'Прибуток від продажу' : 'Витрати на покупку'}: ${dayResult.money} грн<br><br>
+        <b>Ніч:</b><br>
+        Баланс: ${nightResult.balance.toFixed(2)} МВт<br>
+        ${nightResult.balance >= 0 ? 'Прибуток від продажу' : 'Витрати на покупку'}: ${nightResult.money} грн
+      `;
+    }
+  </script>
+
+</body>
+</html>

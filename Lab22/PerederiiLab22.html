@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <h1>В консолi</h1>
+  <script>
+    // 1. Функція seconds
+    function seconds(total) {
+      return total % 60;
+    }
+    console.log("Завдання 1:", seconds(125));
+
+    // 2. Функція perimeter
+    function perimeter(side, count) {
+      return side * count;
+    }
+    console.log("Завдання 2:", perimeter(5, 6));
+
+    // 3. FizzBuzz
+    function fizzBuzz(n) {
+      for (let i = 1; i <= n; i++) {
+        if (i % 3 === 0 && i % 5 === 0) {
+          console.log("fizzbuzz");
+        } else if (i % 3 === 0) {
+          console.log("fizz");
+        } else if (i % 5 === 0) {
+          console.log("buzz");
+        } else {
+          console.log(i);
+        }
+      }
+    }
+    console.log("Завдання 3:");
+    fizzBuzz(20);
+
+    // 4. Середнє арифметичне
+    function Calculate(a, b, c) {
+      console.log("Середнє:", (a + b + c) / 3);
+    }
+    console.log("Завдання 4:");
+    Calculate(3, 6, 9);
+
+    // 5. isDivisible
+    function isDivisibleIf(n, x, y) {
+      if (n % x === 0 && n % y === 0) {
+        console.log("Так");
+      } else {
+        console.log("Ні");
+      }
+    }
+
+    function isDivisibleTernary(n, x, y) {
+      console.log((n % x === 0 && n % y === 0) ? "Так" : "Ні");
+    }
+
+    function isDivisibleNoIf(n, x, y) {
+      console.log((!(n % x) && !(n % y)) && "Так" || "Ні");
+    }
+
+    console.log("Завдання 5:");
+    isDivisibleIf(15, 3, 5);
+    isDivisibleTernary(15, 3, 5);
+    isDivisibleNoIf(15, 3, 5);
+
+    // 6. Масив N елементів
+    let arr = [1, 5, 8, 3, 9, 12, 7, 6, 10];
+    let max = Math.max(...arr);
+    let min = Math.min(...arr);
+    let sum = arr.reduce((a, b) => a + b, 0);
+    let average = sum / arr.length;
+    let odd = arr.filter(num => num % 2 !== 0);
+
+    console.log("Завдання 6:");
+    console.log("Макс:", max);
+    console.log("Мін:", min);
+    console.log("Сума:", sum);
+    console.log("Середнє:", average);
+    console.log("Непарні:", odd);
+
+    // 7. Двовимірний масив 5х5
+    let matrix = [
+      [1, -2, 3, -4, 5],
+      [-6, 7, -8, 9, -10],
+      [11, -12, 13, -14, 15],
+      [-16, 17, -18, 19, -20],
+      [21, -22, 23, -24, 25]
+    ];
+
+    for (let i = 0; i < 5; i++) {
+      matrix[i][i] = (matrix[i][i] >= 0) ? 1 : 0;
+    }
+
+    console.log("Завдання 7:");
+    console.table(matrix);
+
+    // 8. Арифметичні функції
+    function Add(a, b) {
+      console.log("Додавання:", a + b);
+    }
+    function Sub(a, b) {
+      console.log("Віднімання:", a - b);
+    }
+    function Mul(a, b) {
+      console.log("Множення:", a * b);
+    }
+    function Div(a, b) {
+      if (b === 0) {
+        console.log("Ділення на нуль неможливе");
+      } else {
+        console.log("Ділення:", a / b);
+      }
+    }
+
+    let a = 12, b = 4;
+    console.log("Завдання 8:");
+    Add(a, b);
+    Sub(a, b);
+    Mul(a, b);
+    Div(a, b);
+
+    // 9. Перевірка числа
+    function checkNumber(num) {
+      console.log("Завдання 9:");
+      console.log(num >= 0 ? "Позитивне" : "Негативне");
+
+      let isPrime = true;
+      if (num <= 1) isPrime = false;
+      for (let i = 2; i <= Math.sqrt(num); i++) {
+        if (num % i === 0) {
+          isPrime = false;
+          break;
+        }
+      }
+      console.log(isPrime ? "Просте" : "Складене");
+
+      [2, 5, 3, 6, 9].forEach(divisor => {
+        console.log(`Ділиться на ${divisor}:`, num % divisor === 0 ? "Так" : "Ні");
+      });
+    }
+
+    checkNumber(13);
+
+    // 10. Перевернутий масив з квадратами чисел
+    function reverseAndSquare(arr) {
+      return arr.reverse().map(item => typeof item === "number" ? item ** 2 : item);
+    }
+
+    console.log("Завдання 10:");
+    console.log(reverseAndSquare([1, "a", 2, "b", 3]));
+
+    // 11. Видалення дублікатів
+    function removeDuplicates(array) {
+      return Array.from(new Set(array));
+    }
+
+    console.log("Завдання 11:");
+    console.log(removeDuplicates([1, 2, 2, 4, 5, 4, 7, 8, 7, 3, 6]));
+
+  </script>
+</body>
+</html>

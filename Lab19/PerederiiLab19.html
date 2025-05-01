@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .centered {
+            text-align: center;
+            margin-top: 100px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 20px;
+            cursor: pointer;
+        }
+        .game-area {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            grid-gap: 10px;
+            margin: 20px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            border: 2px solid #333;
+            user-select: none;
+        }
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .number-label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .current-img {
+            margin: 20px;
+        }
+        .current-img .card {
+            width: 150px;
+            height: 150px;
+        }
+        .category-select {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="centered" id="startScreen">
+    <h1>Гра на пошук картинок</h1>
+    <button onclick="startGame()">Почати гру</button>
+</div>
+
+<div class="game-area" id="gameScreen">
+    <div class="category-select">
+        <label>Розділ:
+            <select id="categorySelect" onchange="loadGame()">
+                <option value="animals">Тварини</option>
+                <option value="insects">Комахи</option>
+                <option value="fishes">Риби</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="current-img" id="currentImage"></div>
+
+    <div class="board" id="gameBoard"></div>
+
+    <button onclick="restartGame()">Почати з початку</button>
+</div>
+
+<script>
+    const BOARD_SIZE = 25;
+    let images = {
+        animals: Array.from({ length: 50 }, (_, i) => `animals/${i + 1}.jpg`),
+        insects: Array.from({ length: 50 }, (_, i) => `insects/${i + 1}.jpg`),
+        fishes: Array.from({ length: 50 }, (_, i) => `fishes/${i + 1}.jpg`)
+    };
+
+    let boardImages = [];
+    let currentImage = '';
+    let currentCategory = 'animals';
+
+    function startGame() {
+        document.getElementById('startScreen').style.display = 'none';
+        document.getElementById('gameScreen').style.display = 'flex';
+        loadGame();
+    }
+
+    function loadGame() {
+        currentCategory = document.getElementById('categorySelect').value;
+        let categoryImages = images[currentCategory];
+        boardImages = [];
+
+        while (boardImages.length < BOARD_SIZE) {
+            let img = categoryImages[Math.floor(Math.random() * categoryImages.length)];
+            boardImages.push(img);
+        }
+
+        drawBoard();
+        setNewCurrentImage();
+    }
+
+    function drawBoard() {
+        const board = document.getElementById('gameBoard');
+        board.innerHTML = '';
+
+        boardImages.forEach((imgSrc, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.index = index;
+
+            const img = document.createElement('img');
+            img.src = imgSrc;
+
+            const label = document.createElement('div');
+            label.className = 'number-label';
+            label.innerText = getImageNumber(imgSrc);
+
+            card.appendChild(img);
+            card.appendChild(label);
+
+            card.ondragover = function (e) {
+                e.preventDefault();
+            };
+
+            card.ondrop = function (e) {
+                e.preventDefault();
+                const draggedSrc = e.dataTransfer.getData('text/plain');
+                if (draggedSrc === img.src) {
+                    boardImages.splice(index, 1);
+                    drawBoard();
+                    if (boardImages.length === 0) {
+                        setTimeout(() => {
+                            alert('Вітаю! Ви завершили гру!');
+                            loadGame();
+                        }, 100);
+                    } else {
+                        setNewCurrentImage();
+                    }
+                }
+            };
+
+            board.appendChild(card);
+        });
+    }
+
+    function setNewCurrentImage() {
+        if (boardImages.length === 0) return;
+
+        const randomImg = boardImages[Math.floor(Math.random() * boardImages.length)];
+        currentImage = randomImg;
+
+        const current = document.getElementById('currentImage');
+        current.innerHTML = '';
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.draggable = true;
+
+        const img = document.createElement('img');
+        img.src = currentImage;
+
+        const label = document.createElement('div');
+        label.className = 'number-label';
+        label.innerText = getImageNumber(currentImage);
+
+        card.appendChild(img);
+        card.appendChild(label);
+
+        card.ondragstart = function (e) {
+            e.dataTransfer.setData('text/plain', img.src);
+        };
+
+        current.appendChild(card);
+    }
+
+    function restartGame() {
+        loadGame();
+    }
+
+    function getImageNumber(path) {
+        return path.match(/(\d+)\.jpg$/)?.[1] || '?';
+    }
+</script>
+
+</body>
+</html>

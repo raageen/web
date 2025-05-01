@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+        }
+        #main, #game {
+            display: none;
+            padding: 20px;
+        }
+        #main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            background: #3498db;
+            color: white;
+            border-radius: 5px;
+        }
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .number {
+            padding: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            background: #ddd;
+        }
+        .selected {
+            background: #27ae60 !important;
+            color: #fff;
+        }
+        #timer {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 60%;
+        }
+        table, th, td {
+            border: 1px solid #333;
+        }
+        th, td {
+            padding: 8px 12px;
+        }
+        .best {
+            background: #f1c40f;
+        }
+    </style>
+</head>
+<body>
+
+<div id="main">
+    <h1>Гра "Натисни числа"</h1>
+    <button id="start-btn">Почати гру</button>
+</div>
+
+<div id="game">
+    <div id="timer">Час: 60</div>
+    <div id="game-board"></div>
+    <button id="restart-btn">Почати з початку</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Спроба</th>
+                <th>Час (сек)</th>
+            </tr>
+        </thead>
+        <tbody id="stats"></tbody>
+    </table>
+</div>
+
+<script>
+    let expectedNumber = 1;
+    let timerInterval;
+    let timeLeft = 60;
+    let attempts = 0;
+    let results = [];
+
+    function generateBoard() {
+        const board = $("#game-board");
+        board.empty();
+        let numbers = [];
+        for (let i = 1; i <= 20; i++) numbers.push(i);
+        numbers.sort(() => 0.5 - Math.random());
+
+        numbers.forEach(num => {
+            let fontSize = Math.floor(Math.random() * 20) + 16;
+            let color = '#' + Math.floor(Math.random()*16777215).toString(16);
+            board.append(`<div class="number" style="font-size:${fontSize}px; color:${color}">${num}</div>`);
+        });
+    }
+
+    function startTimer() {
+        timeLeft = 60;
+        $("#timer").text("Час: " + timeLeft);
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            $("#timer").text("Час: " + timeLeft);
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("Час вийшов!");
+                recordResult("60+");
+                restartGame();
+            }
+        }, 1000);
+    }
+
+    function recordResult(result) {
+        attempts++;
+        results.push(parseInt(result));
+        let stats = $("#stats");
+        stats.empty();
+        let best = Math.min(...results);
+        for (let i = 0; i < results.length; i++) {
+            stats.append(`<tr class="${results[i] === best ? 'best' : ''}"><td>${i+1}</td><td>${results[i]}</td></tr>`);
+        }
+    }
+
+    function restartGame() {
+        expectedNumber = 1;
+        generateBoard();
+        startTimer();
+    }
+
+    $(document).ready(function() {
+        $("#main").show();
+
+        $("#start-btn").click(function() {
+            $("#main").hide();
+            $("#game").show();
+            restartGame();
+        });
+
+        $("#restart-btn").click(function() {
+            clearInterval(timerInterval);
+            restartGame();
+        });
+
+        $(document).on("click", ".number", function() {
+            let num = parseInt($(this).text());
+            if (num === expectedNumber) {
+                $(this).addClass("selected");
+                expectedNumber++;
+                if (expectedNumber > 20) {
+                    clearInterval(timerInterval);
+                    alert("Вітаємо! Ви виграли за " + (60 - timeLeft) + " секунд!");
+                    recordResult(60 - timeLeft);
+                    restartGame();
+                }
+            } else {
+                alert("Не вірна цифра!");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

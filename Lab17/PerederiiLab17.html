@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <button onclick="showCurrentTime()">Показати поточний час</button>
+  <button onclick="guessNumberGame()">Грати в 'Вгадай число'</button>
+
+  <script>
+    function showCurrentTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+
+      const days = ['неділя', 'понеділок', 'вівторок', 'середа', 'четвер', 'п’ятниця', 'субота'];
+      const months = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
+
+      const dayName = days[now.getDay()];
+      const day = String(now.getDate()).padStart(2, '0');
+      const monthName = months[now.getMonth()];
+      const year = now.getFullYear();
+
+      const formattedTime = `${hours}:${minutes}:${seconds}, ${dayName}, ${day} ${monthName} ${year} року`;
+      console.log(formattedTime);
+    }
+
+    function guessNumberGame() {
+      let targetNumber = Math.floor(Math.random() * 101);
+      let guess;
+      let attempts = 0;
+      let previousDiff = null;
+      let now;
+
+      while (true) {
+        guess = prompt("Введіть число від 0 до 100:");
+
+        if (guess === null) {
+          alert("Гру скасовано.");
+          break;
+        }
+
+        guess = Number(guess);
+        if (isNaN(guess) || guess < 0 || guess > 100) {
+          alert("Введіть коректне число від 0 до 100.");
+          continue;
+        }
+
+        attempts++;
+        now = new Date();
+        const dateTime = `${String(now.getDate()).padStart(2, '0')}.${String(now.getMonth() + 1).padStart(2, '0')}.${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        console.log(`${dateTime} Спроба ${attempts}: число ${guess} – ${guess === targetNumber ? 'вірно!' : 'не вірно'}`);
+
+        if (guess === targetNumber) {
+          alert(`За ${attempts} спроб ви вгадали число ${targetNumber}!`);
+          if (confirm("Бажаєте зіграти ще раз?")) {
+            guessNumberGame();
+          }
+          break;
+        }
+
+        const diff = Math.abs(targetNumber - guess);
+        let message = "";
+
+        if (previousDiff === null) {
+          if (diff <= 5) message = "дуже гаряче!";
+          else if (diff <= 10) message = "гаряче!";
+          else if (diff <= 20) message = "тепло";
+          else if (diff <= 50) message = "холодно";
+          else message = "дуже холодно";
+        } else {
+          if (diff < previousDiff) message = "тепліше";
+          else if (diff > previousDiff) message = "холодніше";
+          else message = "без змін";
+        }
+
+        alert(message);
+        previousDiff = diff;
+      }
+    }
+  </script>
+</body>
+</html>
